@@ -14,6 +14,7 @@ namespace App\Controller\Admin;
 use App\Entity\Post;
 use App\Entity\User;
 use App\Form\PostType;
+use App\Message\ElkIndexPostMessage;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -42,6 +44,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted(User::ROLE_ADMIN)]
 final class BlogController extends AbstractController
 {
+
+    public function __construct(
+        private MessageBusInterface $bus
+    ) {
+    }
+
     /**
      * Lists all Post entities.
      *
@@ -82,8 +90,7 @@ final class BlogController extends AbstractController
 
         // See https://symfony.com/doc/current/form/multiple_buttons.html
         $form = $this->createForm(PostType::class, $post)
-            ->add('saveAndCreateNew', SubmitType::class)
-        ;
+            ->add('saveAndCreateNew', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -91,8 +98,13 @@ final class BlogController extends AbstractController
         // throws an exception if the form has not been submitted.
         // See https://symfony.com/doc/current/forms.html#processing-forms
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($post);
             $entityManager->flush();
+
+            $id = $post->getId();
+
+            $this->bus->dispatch(new ElkIndexPostMessage($id));
 
             // Flash messages are used to notify the user about the result of the
             // actions. They are deleted automatically from the session as soon

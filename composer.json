@@ -17,7 +17,9 @@
         "doctrine/doctrine-bundle": "^2.11",
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.0",
+        "elasticsearch/elasticsearch": "^8.12",
         "league/commonmark": "^2.1",
+        "symfony/amqp-messenger": "7.0.*",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "^7.0",
         "symfony/asset-mapper": "^7.0",
@@ -31,6 +33,7 @@
         "symfony/http-client": "^7.0",
         "symfony/intl": "^7.0",
         "symfony/mailer": "^7.0",
+        "symfony/messenger": "7.0.*",
         "symfony/monolog-bundle": "^3.7",
         "symfony/polyfill-intl-messageformatter": "^1.12",
         "symfony/runtime": "^7.0",
@@ -67,7 +70,8 @@
         "allow-plugins": {
             "symfony/flex": true,
             "symfony/runtime": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
         },
         "platform": {
             "php": "8.2.0"
